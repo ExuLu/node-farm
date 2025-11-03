@@ -47,7 +47,10 @@ const replaceTemplate = (temp, product) => {
     .replace(/{%QUANTITY%}/g, product.quantity)
     .replace(/{%PRICE%}/g, product.price)
     .replace(/{%ID%}/g, product.id)
-    .replace(/{%NOT_ORGANIC%}/g, !product.organic);
+    .replace(/{%NOT_ORGANIC%}/g, !product.organic && 'not-organic')
+    .replace(/{%FROM%}/g, product.from)
+    .replace(/{%NUTRIENTS%}/g, product.nutrients)
+    .replace(/{%DESCRIPTION%}/g, product.description);
 
   return output;
 };
@@ -87,6 +90,7 @@ const server = http.createServer((req, res) => {
     res.writeHead(200, {
       'Content-type': 'text/html',
     });
+    console.log(pathName);
     res.end(tempProduct);
 
     // API
