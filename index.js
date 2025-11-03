@@ -40,6 +40,18 @@ const url = require('url');
 // //////////////////////////
 // SERVER
 
+const replaceTemplate = (temp, product) => {
+  let output = temp
+    .replace(/{%PRODUCTNAME%}/g, product.productName)
+    .replace(/{%IMAGE%}/g, product.image)
+    .replace(/{%QUANTITY%}/g, product.quantity)
+    .replace(/{%PRICE%}/g, product.price)
+    .replace(/{%ID%}/g, product.id)
+    .replace(/{%NOT_ORGANIC%}/g, !product.organic);
+
+  return output;
+};
+
 const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8');
 const tempOverview = fs.readFileSync(
   `${__dirname}/templates/template-overview.html`,
@@ -64,7 +76,11 @@ const server = http.createServer((req, res) => {
     res.writeHead(200, {
       'Content-type': 'text/html',
     });
-    res.end(tempOverview);
+
+    const cardsHtml = dataObject.map((el) => replaceTemplate(tempCard, el));
+    const overviewHtml = tempOverview.replace(/{%PRODUCT_CARDS%}/, cardsHtml);
+
+    res.end(overviewHtml);
 
     // Product page
   } else if (pathName === '/product') {
