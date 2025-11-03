@@ -72,8 +72,7 @@ const tempCard = fs.readFileSync(
 const dataObject = JSON.parse(data);
 
 const server = http.createServer((req, res) => {
-  const fullURL = new URL(req.url, `http://${req.headers.host}`);
-  const { pathname, searchParams } = fullURL;
+  const { pathname, query } = url.parse(req.url, true);
 
   // Overview page
   if (pathname === '/' || pathname === '/overview') {
@@ -90,16 +89,13 @@ const server = http.createServer((req, res) => {
 
     // Product page
   } else if (pathname === '/product') {
-    const productId = Number(searchParams.get('id'));
+    const productId = Number(query.id);
     const product = dataObject.find((el) => el.id === productId);
     const productHtml = replaceTemplate(tempProduct, product);
-
     res.writeHead(200, {
       'Content-type': 'text/html',
     });
-
     res.end(productHtml);
-
     // API
   } else if (pathname === '/api') {
     res.writeHead(200, {
